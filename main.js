@@ -1,62 +1,76 @@
-
-Prediction_1 = "";
-
 Webcam.set({
-width:350,
-height:300,
-image_format:'png',
-png_quality:90
-    });
+  width:350,
+  height:300,
+  image_format : 'png',
+  png_quality:90
+});
 
-    camera = document.getElementById("camera");
-    Webcam.attach('#camera');
+camera = document.getElementById("camera");
 
-    function take_snapshot(){
-        Webcam.snap(function(data_uri){
-            document.getElementById("result").innerHTML = '<img id="captured_image" src="'+data_uri+'"/>';
-        });
-    }
+Webcam.attach( '#camera' );
 
-    console.log('ml5 version:',ml5.version);
-    classifier = ml5.imageClassifier('https://teachablemachine.withgoogle.com/models/zbaC_r-pY/model.json',modelLoaded);
+    
+function take_snapshot()
+{
+  Webcam.snap(function(data_uri) {
+      document.getElementById("result").innerHTML = '<img id="captured_image" src="'+data_uri+'"/>';
+  });
+}
 
-    function modelLoaded(){
-        console.log('model is loaded');
-    }
+console.log('ml5 version:', ml5.version);
 
-    function speak(){
-        var synth = window.speechSynthesis;
-        speak_data_1 = "The first prediction is " + prediction_1;
-        var utterThis = new SpeechSynthesisUtterance(speak_data_1);
-        synth.speak(utterThis);
-      }      
+classifier = ml5.imageClassifier('https://teachablemachine.withgoogle.com/models/zbaC_r-pY/model.json',modelLoaded);
 
-    function check()
-  {
-    img = document.getElementById('captured_image');
-    classifier.classify(img, gotResult);
-  }
-
+function modelLoaded() {
+  console.log('Model Loaded!');
+}
+    
+function check()
+{
+  img = document.getElementById('captured_image');
+  classifier.classify(img, gotResult);
+}
 
 function gotResult(error, results) {
-  if (error) {
-    console.error(error);
-  } else {
-    console.log(results);
-    document.getElementById("result_emotion_name").innerHTML = results[0].label;
-    prediction_1 = results[0].label;
-    speak();
-    if(results[0].label == "Hi")
-    {
-	    document.getElementById("update_emoji").innerHTML = "&#128400";
-    }
-    if(results[0].label == "OK")
-    {
-	    document.getElementById("update_emoji").innerHTML = "&#128076;";
-    }
-    if(results[0].label == "Up")
-    {
-	    document.getElementById("update_emoji").innerHTML = "&#128070;";
-    }
+if (error) {
+  console.error(error);
+} else {
+  console.log(results);
+  
+  document.getElementById("result_object_name").innerHTML = results[0].label;
+
+  gesture = results[0].label;
+  
+  toSpeak = "";
+  
+  if(gesture == "Hi")
+  {
+    toSpeak = "Hi";
+    document.getElementById("result_object_gesture_icon").innerHTML = "&#128400;";
   }
+  else if(gesture == "OK")
+  {
+    toSpeak = "OK";
+    document.getElementById("result_object_gesture_icon").innerHTML = "&#128076;";
+  }
+  else if(gesture == "Up")
+  {
+    toSpeak = "Up";
+    document.getElementById("result_object_gesture_icon").innerHTML = "&#128070;";
+  }
+
+  speak();
+}
+}
+
+
+function speak(){
+  var synth = window.speechSynthesis;
+
+  speak_data = toSpeak;
+
+  var utterThis = new SpeechSynthesisUtterance(speak_data);
+
+  synth.speak(utterThis);
+
 }
